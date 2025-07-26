@@ -11,7 +11,6 @@ import paymentRoutes from './routes/payments';
 import alertRoutes from './routes/alerts';
 import dashboardRoutes from './routes/dashboard';
 import { errorHandler } from './middleware/errorHandler';
-import { startAlertService } from './services/alertService';
 
 dotenv.config();
 
@@ -19,12 +18,31 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware de seguridad
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+
+// CORS configurado para Vercel
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://gymcontrol-admin.vercel.app', 'https://*.vercel.app']
+    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100 // máximo 100 requests por ventana de tiempo por IP
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000 // más límite en desarrollo
 });
 app.use(limiter);
 
@@ -61,13 +79,18 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
-  console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
-  
-  // Iniciar servicio de alertas
-  startAlertService();
-});
+// Para Vercel, exportar la app
+if (process.env.NODE_ENV === 'production') {
+  module.exports = app;
+} else {
+  // Solo iniciar servidor en desarrollo
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
+    console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
+    
+    // En desarrollo, podemos iniciar servicios adicionales
+    // startAlertService(); // Deshabilitado para Vercel
+  });
+}
 
 export default app;
