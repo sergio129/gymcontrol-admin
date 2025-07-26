@@ -64,7 +64,7 @@ const checkPaymentAlerts = async () => {
 
       alertsToCreate.push({
         memberId: member.id,
-        alertType: 'PAYMENT_DUE_SOON',
+        alertType: 'PAYMENT_DUE_SOON' as const,
         message: `${member.firstName} ${member.lastName} (${member.document}) - Pago vence en ${daysUntilDue} día(s)`,
         alertDate: today
       });
@@ -78,7 +78,7 @@ const checkPaymentAlerts = async () => {
 
       alertsToCreate.push({
         memberId: member.id,
-        alertType: 'PAYMENT_OVERDUE',
+        alertType: 'PAYMENT_OVERDUE' as const,
         message: `${member.firstName} ${member.lastName} (${member.document}) - Pago vencido hace ${daysOverdue} día(s)`,
         alertDate: today
       });

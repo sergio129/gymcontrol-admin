@@ -199,6 +199,11 @@ router.get('/', authenticateToken, async (req, res) => {
 router.get('/monthly-stats/:year', authenticateToken, async (req, res) => {
   try {
     const { year } = req.params;
+    
+    if (!year) {
+      return res.status(400).json({ message: 'Año es requerido' });
+    }
+    
     const yearNumber = parseInt(year);
 
     const monthlyStats = [];

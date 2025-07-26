@@ -12,18 +12,20 @@ export const authenticateToken = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ message: 'Token de acceso requerido' });
+      res.status(401).json({ message: 'Token de acceso requerido' });
+      return;
     }
 
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET no está configurado');
+      res.status(500).json({ message: 'Error de configuración del servidor' });
+      return;
     }
 
     const decoded = jwt.verify(token, jwtSecret) as { adminId: string };
@@ -34,13 +36,14 @@ export const authenticateToken = async (
     });
 
     if (!admin) {
-      return res.status(401).json({ message: 'Token inválido' });
+      res.status(401).json({ message: 'Token inválido' });
+      return;
     }
 
     req.adminId = decoded.adminId;
     next();
   } catch (error) {
     console.error('Error en autenticación:', error);
-    return res.status(403).json({ message: 'Token inválido' });
+    res.status(403).json({ message: 'Token inválido' });
   }
 };
