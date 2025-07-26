@@ -11,6 +11,7 @@ import paymentRoutes from './routes/payments';
 import alertRoutes from './routes/alerts';
 import dashboardRoutes from './routes/dashboard';
 import { errorHandler } from './middleware/errorHandler';
+import { getCorsConfig } from './config/cors';
 
 dotenv.config();
 
@@ -30,14 +31,7 @@ app.use(helmet({
 }));
 
 // CORS configurado para Vercel
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://gymcontrol-admin.vercel.app', 'https://*.vercel.app']
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors(getCorsConfig()));
 
 // Rate limiting
 const limiter = rateLimit({
