@@ -44,7 +44,7 @@ export interface Payment {
   };
 }
 
-export type PaymentType = 'MONTHLY' | 'REGISTRATION' | 'PENALTY' | 'OTHER';
+export type PaymentType = 'MONTHLY' | 'ANNUAL' | 'REGISTRATION' | 'PENALTY' | 'OTHER';
 
 export interface Alert {
   id: string;

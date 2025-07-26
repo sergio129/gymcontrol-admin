@@ -74,15 +74,17 @@ async function main() {
     // Crear algunos pagos de ejemplo
     const membersData = await prisma.member.findMany();
     
-    for (const member of membersData) {
+    for (let i = 0; i < membersData.length; i++) {
+      const member = membersData[i];
+      
       // Crear pago del mes actual
       await prisma.payment.create({
         data: {
           memberId: member.id,
-          amount: member.monthlyFee,
+          amount: i === 0 ? member.monthlyFee * 12 : member.monthlyFee, // Pago anual es 12 veces el mensual
           paymentDate: new Date(),
-          paymentType: 'MONTHLY',
-          description: 'Pago mensual'
+          paymentType: i === 0 ? 'ANNUAL' : 'MONTHLY', // Primer miembro con pago anual
+          description: i === 0 ? 'Pago anual' : 'Pago mensual'
         }
       });
 

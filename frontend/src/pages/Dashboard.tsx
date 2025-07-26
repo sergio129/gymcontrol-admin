@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { DashboardService } from '../services';
 import { Dashboard as DashboardType } from '../types';
+import { formatCurrency, getPaymentTypeName } from '../utils/currency';
 
 const Dashboard: React.FC = () => {
   const [dashboard, setDashboard] = useState<DashboardType | null>(null);
@@ -39,7 +40,7 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const { stats, alerts, recentPayments, paymentsByType } = dashboard;
+  const { stats, alerts, recentPayments } = dashboard;
 
   return (
     <div className="space-y-6">
@@ -84,7 +85,7 @@ const Dashboard: React.FC = () => {
             Ingresos del Mes
           </h3>
           <div className="text-3xl font-bold text-green-600">
-            ${stats.monthlyRevenue.toLocaleString('es-CO')} COP
+            {formatCurrency(stats.monthlyRevenue)}
           </div>
           <p className="text-sm text-gray-500 mt-1">
             {stats.totalPaymentsThisMonth} pagos realizados
@@ -129,7 +130,7 @@ const Dashboard: React.FC = () => {
                         {member.nextPaymentDate && new Date(member.nextPaymentDate).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-gray-600">
-                        ${member.monthlyFee.toLocaleString('es-CO')} COP
+                        {formatCurrency(member.monthlyFee)}
                       </p>
                     </div>
                   </div>
@@ -160,7 +161,7 @@ const Dashboard: React.FC = () => {
                         {member.nextPaymentDate && new Date(member.nextPaymentDate).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-gray-600">
-                        ${member.monthlyFee.toLocaleString('es-CO')} COP
+                        {formatCurrency(member.monthlyFee)}
                       </p>
                     </div>
                   </div>
@@ -196,16 +197,15 @@ const Dashboard: React.FC = () => {
                         'N/A'
                       }
                     </td>
-                    <td>${payment.amount.toLocaleString('es-CO')} COP</td>
+                    <td>{formatCurrency(payment.amount)}</td>
                     <td>
                       <span className={`badge ${
                         payment.paymentType === 'MONTHLY' ? 'badge-success' : 
+                        payment.paymentType === 'ANNUAL' ? 'badge-primary' :
                         payment.paymentType === 'REGISTRATION' ? 'badge-info' :
                         'badge-warning'
                       }`}>
-                        {payment.paymentType === 'MONTHLY' ? 'Mensual' :
-                         payment.paymentType === 'REGISTRATION' ? 'Inscripción' :
-                         payment.paymentType === 'PENALTY' ? 'Multa' : 'Otro'}
+                        {getPaymentTypeName(payment.paymentType)}
                       </span>
                     </td>
                     <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
