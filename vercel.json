@@ -7,19 +7,17 @@
       "config": {
         "distDir": "build"
       }
-    },
-    {
-      "src": "backend/src/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["backend/prisma/**"]
-      }
     }
   ],
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3.1.5"
+    }
+  },
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/backend/src/index.ts"
+      "dest": "/api/index.ts"
     },
     {
       "src": "/(.*)",
