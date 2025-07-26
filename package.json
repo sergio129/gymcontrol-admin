@@ -12,10 +12,19 @@
     "build:frontend": "cd frontend && npm run build",
     "start": "cd backend && npm start"
   },
-  "keywords": ["gimnasio", "admin", "typescript", "react", "node"],
+  "keywords": [
+    "gimnasio",
+    "admin",
+    "typescript",
+    "react",
+    "node"
+  ],
   "author": "GYMControl Team",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@vercel/node": "^5.3.7"
   }
 }
