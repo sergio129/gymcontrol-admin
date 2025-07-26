@@ -84,7 +84,7 @@ const Dashboard: React.FC = () => {
             Ingresos del Mes
           </h3>
           <div className="text-3xl font-bold text-green-600">
-            ${stats.monthlyRevenue.toLocaleString()}
+            ${stats.monthlyRevenue.toLocaleString('es-CO')} COP
           </div>
           <p className="text-sm text-gray-500 mt-1">
             {stats.totalPaymentsThisMonth} pagos realizados
@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
                         {member.nextPaymentDate && new Date(member.nextPaymentDate).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-gray-600">
-                        ${member.monthlyFee}
+                        ${member.monthlyFee.toLocaleString('es-CO')} COP
                       </p>
                     </div>
                   </div>
@@ -160,7 +160,7 @@ const Dashboard: React.FC = () => {
                         {member.nextPaymentDate && new Date(member.nextPaymentDate).toLocaleDateString()}
                       </p>
                       <p className="text-xs text-gray-600">
-                        ${member.monthlyFee}
+                        ${member.monthlyFee.toLocaleString('es-CO')} COP
                       </p>
                     </div>
                   </div>
@@ -196,14 +196,16 @@ const Dashboard: React.FC = () => {
                         'N/A'
                       }
                     </td>
-                    <td>${payment.amount}</td>
+                    <td>${payment.amount.toLocaleString('es-CO')} COP</td>
                     <td>
                       <span className={`badge ${
                         payment.paymentType === 'MONTHLY' ? 'badge-success' : 
                         payment.paymentType === 'REGISTRATION' ? 'badge-info' :
                         'badge-warning'
                       }`}>
-                        {payment.paymentType}
+                        {payment.paymentType === 'MONTHLY' ? 'Mensual' :
+                         payment.paymentType === 'REGISTRATION' ? 'Inscripción' :
+                         payment.paymentType === 'PENALTY' ? 'Multa' : 'Otro'}
                       </span>
                     </td>
                     <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>

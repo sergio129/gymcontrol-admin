@@ -41,7 +41,7 @@ async function main() {
           email: 'juan.perez@email.com',
           phone: '123-456-7890',
           address: 'Calle 123, Ciudad',
-          monthlyFee: 50.00,
+          monthlyFee: 80000.00, // 80,000 COP
           isActive: true
         },
         {
@@ -51,7 +51,7 @@ async function main() {
           email: 'ana.garcia@email.com',
           phone: '123-456-7892',
           address: 'Avenida 456, Ciudad',
-          monthlyFee: 50.00,
+          monthlyFee: 100000.00, // 100,000 COP
           registrationDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 días atrás
           isActive: true
         },
@@ -62,7 +62,7 @@ async function main() {
           email: 'carlos.lopez@email.com',
           phone: '123-456-7894',
           address: 'Plaza 789, Ciudad',
-          monthlyFee: 50.00,
+          monthlyFee: 90000.00, // 90,000 COP
           registrationDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000), // 45 días atrás
           isActive: false
         }
@@ -79,7 +79,7 @@ async function main() {
       await prisma.payment.create({
         data: {
           memberId: member.id,
-          amount: 50.00,
+          amount: member.monthlyFee,
           paymentDate: new Date(),
           paymentType: 'MONTHLY',
           description: 'Pago mensual'
@@ -91,7 +91,7 @@ async function main() {
         await prisma.payment.create({
           data: {
             memberId: member.id,
-            amount: 50.00,
+            amount: member.monthlyFee,
             paymentDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
             paymentType: 'MONTHLY',
             description: 'Pago mes anterior'
