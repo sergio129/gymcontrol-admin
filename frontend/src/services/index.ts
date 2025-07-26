@@ -140,7 +140,12 @@ export class PaymentService {
     payments: Payment[];
   }> {
     const response = await apiService.get('/payments/reports/monthly', { year, month });
-    return response.data;
+    return response.data as {
+      totalAmount: number;
+      totalPayments: number;
+      paymentsByType: Record<string, number>;
+      payments: Payment[];
+    };
   }
 }
 
@@ -186,7 +191,11 @@ export class AlertService {
     byType: Record<string, number>;
   }> {
     const response = await apiService.get('/alerts/summary');
-    return response.data;
+    return response.data as {
+      total: number;
+      unread: number;
+      byType: Record<string, number>;
+    };
   }
 }
 
@@ -207,6 +216,15 @@ export class DashboardService {
     }>;
   }> {
     const response = await apiService.get(`/dashboard/monthly-stats/${year}`);
-    return response.data;
+    return response.data as {
+      year: number;
+      monthlyStats: Array<{
+        month: number;
+        monthName: string;
+        revenue: number;
+        paymentsCount: number;
+        newMembers: number;
+      }>;
+    };
   }
 }

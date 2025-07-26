@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 import { authenticateToken } from '../middleware/auth';
 
@@ -34,16 +34,16 @@ router.post('/login', async (req, res) => {
     // Generar JWT
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET no está configurado');
+      return res.status(500).json({ message: 'Configuración del servidor incorrecta' });
     }
 
     const token = jwt.sign(
       { adminId: admin.id },
       jwtSecret,
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: '7d' }
     );
 
-    res.json({
+    return res.json({
       token,
       admin: {
         id: admin.id,
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Error en login:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 
@@ -71,10 +71,10 @@ router.get('/verify', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Admin no encontrado' });
     }
 
-    res.json({ admin });
+    return res.json({ admin });
   } catch (error) {
     console.error('Error verificando token:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 
@@ -115,10 +115,10 @@ router.post('/change-password', authenticateToken, async (req, res) => {
       data: { password: hashedPassword }
     });
 
-    res.json({ message: 'Contraseña actualizada exitosamente' });
+    return res.json({ message: 'Contraseña actualizada exitosamente' });
   } catch (error) {
     console.error('Error cambiando contraseña:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 
