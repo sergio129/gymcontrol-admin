@@ -1,0 +1,21 @@
+{
+  "name": "gymcontrol-admin",
+  "version": "1.0.0",
+  "description": "Sistema administrativo para gimnasio - Control de afiliados y pagos",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["gimnasio", "admin", "typescript", "react", "node"],
+  "author": "GYMControl Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
