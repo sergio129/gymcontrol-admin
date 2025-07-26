@@ -139,6 +139,7 @@ export interface CreatePaymentRequest {
   memberId: string;
   amount: number;
   paymentType?: PaymentType;
+  paymentDate?: string;
   description?: string;
 }
 

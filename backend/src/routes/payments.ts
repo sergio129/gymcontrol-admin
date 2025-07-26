@@ -88,7 +88,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 // Registrar nuevo pago
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { memberId, amount, paymentType = 'MONTHLY', description } = req.body;
+    const { memberId, amount, paymentType = 'MONTHLY', paymentDate, description } = req.body;
 
     if (!memberId || !amount) {
       return res.status(400).json({ 
@@ -111,17 +111,29 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(404).json({ message: 'Afiliado no encontrado' });
     }
 
-    const paymentDate = new Date();
+    const paymentDateObj = paymentDate ? new Date(paymentDate) : new Date();
     let nextPaymentDate: Date | null = null;
 
-    // Si es pago mensual, calcular próxima fecha de pago
-    if (paymentType === 'MONTHLY') {
-      nextPaymentDate = new Date(paymentDate);
-      nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+    // Calcular próxima fecha de pago basada en la fecha de registro y tipo de membresía
+    if (paymentType === 'MONTHLY' || paymentType === 'ANNUAL') {
+      const registrationDate = new Date(member.registrationDate);
+      nextPaymentDate = new Date(registrationDate);
+      
+      if (paymentType === 'ANNUAL') {
+        // Para pagos anuales, buscar el próximo aniversario después de la fecha de pago
+        while (nextPaymentDate <= paymentDateObj) {
+          nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
+        }
+      } else {
+        // Para pagos mensuales, buscar el próximo mes después de la fecha de pago
+        while (nextPaymentDate <= paymentDateObj) {
+          nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+        }
+      }
     }
 
     // Crear el pago y actualizar el afiliado en una transacción
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Crear pago
       const payment = await tx.payment.create({
         data: {
@@ -129,16 +141,16 @@ router.post('/', authenticateToken, async (req, res) => {
           amount: Number(amount),
           paymentType,
           description: description || null,
-          paymentDate
+          paymentDate: paymentDateObj
         }
       });
 
-      // Actualizar fechas en el afiliado si es pago mensual
-      if (paymentType === 'MONTHLY') {
+      // Actualizar fechas en el afiliado si es pago mensual o anual
+      if (paymentType === 'MONTHLY' || paymentType === 'ANNUAL') {
         await tx.member.update({
           where: { id: memberId },
           data: {
-            lastPaymentDate: paymentDate,
+            lastPaymentDate: paymentDateObj,
             nextPaymentDate
           }
         });
