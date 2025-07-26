@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { MagnifyingGlassIcon, CurrencyDollarIcon, PlusIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, CurrencyDollarIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { PaymentService, MemberService } from '../services';
 import { Payment, Member } from '../types';
 import { formatCurrency, getPaymentTypeName } from '../utils/currency';
@@ -16,12 +16,7 @@ const Payments: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    loadPayments();
-    loadMembers();
-  }, [currentPage]);
-
-  const loadPayments = async () => {
+  const loadPayments = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await PaymentService.getPayments({
@@ -36,7 +31,12 @@ const Payments: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage]);
+
+  useEffect(() => {
+    loadPayments();
+    loadMembers();
+  }, [loadPayments]);
 
   const loadMembers = async () => {
     try {

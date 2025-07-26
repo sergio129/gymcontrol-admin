@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { XMarkIcon, CurrencyDollarIcon, CalendarIcon, UserIcon } from '@heroicons/react/24/outline';
 import { Member, Payment } from '../types';
 import { PaymentService } from '../services';
@@ -15,11 +15,7 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onEdit }) 
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
 
-  useEffect(() => {
-    loadPayments();
-  }, [member.id]);
-
-  const loadPayments = async () => {
+  const loadPayments = useCallback(async () => {
     try {
       setLoadingPayments(true);
       const response = await PaymentService.getPayments({
@@ -34,7 +30,11 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onEdit }) 
     } finally {
       setLoadingPayments(false);
     }
-  };
+  }, [member.id]);
+
+  useEffect(() => {
+    loadPayments();
+  }, [loadPayments]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-CO', {
