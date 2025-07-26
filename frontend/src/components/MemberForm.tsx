@@ -19,6 +19,8 @@ interface MemberFormData {
   phone?: string;
   address?: string;
   birthDate?: string;
+  registrationDate: string;
+  membershipType: 'MONTHLY' | 'ANNUAL';
   monthlyFee: number;
   notes?: string;
 }
@@ -43,8 +45,25 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onSuccess, onClose }) =
         phone: member.phone || '',
         address: member.address || '',
         birthDate: member.birthDate ? new Date(member.birthDate).toISOString().split('T')[0] : '',
+        registrationDate: new Date(member.registrationDate).toISOString().split('T')[0],
+        membershipType: member.membershipType,
         monthlyFee: Number(member.monthlyFee),
         notes: member.notes || ''
+      });
+    } else {
+      // Valores por defecto para nuevo miembro
+      reset({
+        firstName: '',
+        lastName: '',
+        document: '',
+        email: '',
+        phone: '',
+        address: '',
+        birthDate: '',
+        registrationDate: new Date().toISOString().split('T')[0],
+        membershipType: 'MONTHLY',
+        monthlyFee: 80000,
+        notes: ''
       });
     }
   }, [member, reset]);
@@ -176,6 +195,36 @@ const MemberForm: React.FC<MemberFormProps> = ({ member, onSuccess, onClose }) =
                 className="input"
                 {...register('birthDate')}
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Fecha de Ingreso *
+              </label>
+              <input
+                type="date"
+                className={`input ${errors.registrationDate ? 'border-red-500' : ''}`}
+                {...register('registrationDate', { required: 'La fecha de ingreso es requerida' })}
+              />
+              {errors.registrationDate && (
+                <p className="text-red-500 text-sm mt-1">{errors.registrationDate.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Tipo de Membresía *
+              </label>
+              <select
+                className={`input ${errors.membershipType ? 'border-red-500' : ''}`}
+                {...register('membershipType', { required: 'El tipo de membresía es requerido' })}
+              >
+                <option value="MONTHLY">Mensual</option>
+                <option value="ANNUAL">Anual</option>
+              </select>
+              {errors.membershipType && (
+                <p className="text-red-500 text-sm mt-1">{errors.membershipType.message}</p>
+              )}
             </div>
           </div>
 

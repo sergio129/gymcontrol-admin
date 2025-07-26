@@ -22,22 +22,23 @@ model Admin {
 }
 
 model Member {
-  id                String    @id @default(cuid())
+  id                String         @id @default(cuid())
   firstName         String
   lastName          String
-  document          String    @unique
-  email             String?   @unique
+  document          String         @unique
+  email             String?        @unique
   phone             String?
   address           String?
   birthDate         DateTime?
-  registrationDate  DateTime  @default(now())
+  registrationDate  DateTime       @default(now())
+  membershipType    MembershipType @default(MONTHLY)
   lastPaymentDate   DateTime?
   nextPaymentDate   DateTime?
-  isActive          Boolean   @default(true)
-  monthlyFee        Decimal   @default(0)
+  isActive          Boolean        @default(true)
+  monthlyFee        Decimal        @default(0)
   notes             String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
   payments Payment[]
 
@@ -77,6 +78,11 @@ model Alert {
   createdAt   DateTime    @default(now())
 
   @@map("alerts")
+}
+
+enum MembershipType {
+  MONTHLY
+  ANNUAL
 }
 
 enum AlertType {

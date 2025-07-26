@@ -96,6 +96,8 @@ router.post('/', authenticateToken, async (req, res) => {
       phone,
       address,
       birthDate,
+      registrationDate,
+      membershipType,
       monthlyFee,
       notes
     } = req.body;
@@ -104,6 +106,16 @@ router.post('/', authenticateToken, async (req, res) => {
       return res.status(400).json({ 
         message: 'Nombre, apellido y documento son requeridos' 
       });
+    }
+
+    // Calcular próxima fecha de pago basada en la fecha de registro y tipo de membresía
+    const regDate = registrationDate ? new Date(registrationDate) : new Date();
+    let nextPaymentDate = new Date(regDate);
+    
+    if (membershipType === 'ANNUAL') {
+      nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
+    } else {
+      nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
     }
 
     const member = await prisma.member.create({
@@ -115,6 +127,9 @@ router.post('/', authenticateToken, async (req, res) => {
         phone: phone || null,
         address: address || null,
         birthDate: birthDate ? new Date(birthDate) : null,
+        registrationDate: regDate,
+        membershipType: membershipType || 'MONTHLY',
+        nextPaymentDate,
         monthlyFee: monthlyFee || 0,
         notes: notes || null
       }
@@ -144,25 +159,55 @@ router.put('/:id', authenticateToken, async (req, res) => {
       phone,
       address,
       birthDate,
+      registrationDate,
+      membershipType,
       monthlyFee,
       notes,
       isActive
     } = req.body;
 
+    // Si se cambia el tipo de membresía o la fecha de registro, recalcular próxima fecha de pago
+    let updateData: any = {
+      firstName,
+      lastName,
+      document,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
+      birthDate: birthDate ? new Date(birthDate) : null,
+      monthlyFee: monthlyFee || 0,
+      notes: notes || null,
+      isActive: isActive !== undefined ? isActive : undefined
+    };
+
+    if (registrationDate) {
+      updateData.registrationDate = new Date(registrationDate);
+    }
+
+    if (membershipType) {
+      updateData.membershipType = membershipType;
+    }
+
+    // Si se actualiza el tipo de membresía o fecha de registro, recalcular próxima fecha de pago
+    if (membershipType || registrationDate) {
+      const currentMember = await prisma.member.findUnique({ where: { id } });
+      if (currentMember) {
+        const regDate = registrationDate ? new Date(registrationDate) : currentMember.registrationDate;
+        const memType = membershipType || currentMember.membershipType;
+        
+        let nextPaymentDate = new Date(regDate);
+        if (memType === 'ANNUAL') {
+          nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
+        } else {
+          nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+        }
+        updateData.nextPaymentDate = nextPaymentDate;
+      }
+    }
+
     const member = await prisma.member.update({
       where: { id },
-      data: {
-        firstName,
-        lastName,
-        document,
-        email: email || null,
-        phone: phone || null,
-        address: address || null,
-        birthDate: birthDate ? new Date(birthDate) : null,
-        monthlyFee: monthlyFee || 0,
-        notes: notes || null,
-        isActive: isActive !== undefined ? isActive : undefined
-      }
+      data: updateData
     });
 
     res.json(member);

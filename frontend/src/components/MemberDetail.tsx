@@ -144,11 +144,26 @@ const MemberDetail: React.FC<MemberDetailProps> = ({ member, onClose, onEdit }) 
                   <span className="text-sm text-gray-900">{formatDate(member.registrationDate)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium text-gray-500">Cuota Mensual:</span>
-                  <span className="text-sm font-semibold text-gray-900">
-                    {formatCurrency(Number(member.monthlyFee))}
+                  <span className="text-sm font-medium text-gray-500">Tipo de Membresía:</span>
+                  <span className="text-sm font-semibold text-blue-600">
+                    {member.membershipType === 'MONTHLY' ? 'Mensual' : 'Anual'}
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium text-gray-500">Cuota:</span>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {formatCurrency(Number(member.monthlyFee))}
+                    <span className="text-xs text-gray-500 ml-1">
+                      / {member.membershipType === 'MONTHLY' ? 'mes' : 'año'}
+                    </span>
+                  </span>
+                </div>
+                {member.nextPaymentDate && (
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium text-gray-500">Próximo Pago:</span>
+                    <span className="text-sm text-gray-900">{formatDate(member.nextPaymentDate)}</span>
+                  </div>
+                )}
                 {member.lastPaymentDate && (
                   <div className="flex justify-between">
                     <span className="text-sm font-medium text-gray-500">Último Pago:</span>

@@ -4,8 +4,7 @@ import { PlusIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/ou
 import { MemberService } from '../services';
 import { Member } from '../types';
 import { formatCurrency } from '../utils/currency';
-import MemberForm from '../components/MemberForm';
-import MemberDetail from '../components/MemberDetail';
+import { MemberForm, MemberDetail } from '../components';
 
 const Members: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
@@ -86,7 +85,7 @@ const Members: React.FC = () => {
       member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.document.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (member.email && member.email.toLowerCase().includes(searchTerm.toLowerCase()));
+      member.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus = 
       statusFilter === 'all' ||
@@ -174,7 +173,8 @@ const Members: React.FC = () => {
                   <th>Documento</th>
                   <th>Email</th>
                   <th>Teléfono</th>
-                  <th>Cuota Mensual</th>
+                  <th>Membresía</th>
+                  <th>Cuota</th>
                   <th>Estado</th>
                   <th>Fecha Registro</th>
                   <th>Acciones</th>
@@ -193,7 +193,17 @@ const Members: React.FC = () => {
                     <td>{member.document}</td>
                     <td>{member.email || '-'}</td>
                     <td>{member.phone || '-'}</td>
-                    <td>{formatCurrency(member.monthlyFee)}</td>
+                    <td>
+                      <span className={`badge ${member.membershipType === 'MONTHLY' ? 'badge-info' : 'badge-warning'}`}>
+                        {member.membershipType === 'MONTHLY' ? 'Mensual' : 'Anual'}
+                      </span>
+                    </td>
+                    <td>
+                      {formatCurrency(member.monthlyFee)}
+                      <span className="text-xs text-gray-500 block">
+                        / {member.membershipType === 'MONTHLY' ? 'mes' : 'año'}
+                      </span>
+                    </td>
                     <td>
                       <span className={`badge ${member.isActive ? 'badge-success' : 'badge-error'}`}>
                         {member.isActive ? 'Activo' : 'Inactivo'}

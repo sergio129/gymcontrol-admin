@@ -14,6 +14,7 @@ export interface Member {
   address?: string;
   birthDate?: string;
   registrationDate: string;
+  membershipType: 'MONTHLY' | 'ANNUAL';
   lastPaymentDate?: string;
   nextPaymentDate?: string;
   isActive: boolean;
@@ -124,6 +125,8 @@ export interface CreateMemberRequest {
   phone?: string;
   address?: string;
   birthDate?: string;
+  registrationDate?: string;
+  membershipType?: 'MONTHLY' | 'ANNUAL';
   monthlyFee?: number;
   notes?: string;
 }
