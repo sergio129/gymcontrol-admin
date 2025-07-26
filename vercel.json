@@ -2,7 +2,10 @@
   "version": 2,
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node@3.1.5"
+      "runtime": "@vercel/node@3.1.5",
+      "env": {
+        "NODE_VERSION": "20"
+      }
     }
   },
   "routes": [
@@ -20,5 +23,8 @@
   ],
   "installCommand": "cd frontend && npm ci",
   "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/build"
+  "outputDirectory": "frontend/build",
+  "engines": {
+    "node": "20.x"
+  }
 }
