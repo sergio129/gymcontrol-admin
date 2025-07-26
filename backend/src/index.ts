@@ -73,11 +73,11 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Para Vercel, exportar la app
-if (process.env.NODE_ENV === 'production') {
-  module.exports = app;
-} else {
-  // Solo iniciar servidor en desarrollo
+// Para Vercel, exportar la app como handler
+export default app;
+
+// Solo iniciar servidor en desarrollo local
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
   app.listen(PORT, () => {
     console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`);
     console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
@@ -86,5 +86,3 @@ if (process.env.NODE_ENV === 'production') {
     // startAlertService(); // Deshabilitado para Vercel
   });
 }
-
-export default app;
